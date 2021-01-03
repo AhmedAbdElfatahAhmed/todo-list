@@ -5,8 +5,15 @@ excercies
 3- create delete all tasks button (new button)
 4- create finish all tasks button (new button)
 5- Add task to localstorage
+*/
+
+/*
+excercies from Ahmed Helal 
+1-
 
 */
+
+
 
 // Setting up variables
 let theInput = document.querySelector(".add-task input");
@@ -56,34 +63,14 @@ const handleNewTask = () => {
       return false;
     }
 
-    // create span element
-    let mainSpan = document.createElement("span");
 
-    // create Text Node inside mainSpan
-    mainSpan.appendChild(document.createTextNode(theInput.value));
-
+    // function to add task (not in locallStorage)
+    bindTask(theInput.value);
     tasks.push(theInput.value); ///////////////////////////////////////////////////////////best solution
     localStorage.setItem("myTasks" ,JSON.stringify (tasks ) )
 
-    // create delete span Button
-    let deleteButton = document.createElement("span");
 
-    // create Text Node (Delete) inside deleteButton
-    deleteButton.appendChild(document.createTextNode("Delete"));
 
-    // Append deleteButton to mainSpan
-    mainSpan.appendChild(deleteButton);
-
-    // Append mainSpan to tasksContainer
-    tasksContainer.appendChild(mainSpan);
-
-    // Add task-box class to mainSpan
-    mainSpan.classList.add("task-box");
-
-    // Add delete class to deleteButton (another method)
-    deleteButton.className = "delete";
-
-  
 
     // Empty the input function
     resetInput();
@@ -182,6 +169,35 @@ function calculateTasks() {
   ).length;
 }
 
+
+function bindTask(task)
+{
+// create span element
+let mainSpan = document.createElement("span");
+
+// create Text Node inside mainSpan
+mainSpan.appendChild(document.createTextNode(task));
+
+// create delete span Button
+let deleteButton = document.createElement("span");
+
+// create Text Node (Delete) inside deleteButton
+deleteButton.appendChild(document.createTextNode("Delete"));
+
+// Append deleteButton to mainSpan
+mainSpan.appendChild(deleteButton);
+
+// Append mainSpan to tasksContainer
+tasksContainer.appendChild(mainSpan);
+
+// Add task-box class to mainSpan
+mainSpan.classList.add("task-box");
+
+// Add delete class to deleteButton (another method)
+deleteButton.className = "delete";
+
+}
+    
 function isTaskExist() {
   let tasksArray = [];
   let allTasks = Array.from(
@@ -258,30 +274,7 @@ if( document.querySelector("#no_task"))
   document.querySelector("#no_task").remove();
 }
    
-
-    // create span element
-    let mainSpan = document.createElement("span");
-
-    // create Text Node inside mainSpan
-    mainSpan.appendChild(document.createTextNode(task));
-
-    // create delete span Button
-    let deleteButton = document.createElement("span");
-
-    // create Text Node (Delete) inside deleteButton
-    deleteButton.appendChild(document.createTextNode("Delete"));
-
-    // Append deleteButton to mainSpan
-    mainSpan.appendChild(deleteButton);
-
-    // Append mainSpan to tasksContainer
-    tasksContainer.appendChild(mainSpan);
-
-    // Add task-box class to mainSpan
-    mainSpan.classList.add("task-box");
-
-    // Add delete class to deleteButton (another method)
-    deleteButton.className = "delete";
+bindTask(task);
   }
 
 
@@ -293,7 +286,7 @@ if(tasksFromLocalStorage)
   for(task of tasksFromLocalStorage)
   {
     
-    handleNewTaskFromLocalStorage(task)
+    handleNewTaskFromLocalStorage(task);
     
   }
   
