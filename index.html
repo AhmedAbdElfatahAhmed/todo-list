@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/index_style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List App</title>
+</head>
+
+<body>
+<!-- note , i am using js to create html code , and remove it from here -->
+<div class="toDo-container">
+
+<div class="add-task">
+<input type="text">
+<span class="plus">+</span>
+</div>
+<div class="tasks-content">
+<span class="no-tasks-message" id="no_task">No tasks to show</span>
+<!-- <span class="task-box">First
+    <span>Delete</span>
+</span>
+<span class="task-box">Second
+    <span>Delete</span>
+</span>
+<span class="task-box">third
+    <span>Delete</span>
+</span> -->
+</div>
+<div class="tasks-status">
+<div class="task-count">Tasks <span>0</span></div>
+<div class="task-completed">Completed <span>0</span></div>
+</div>
+
+</div>
+
+<div class="buttons d-flex justify-content-around">
+<button disabled id="deleteAll" class="btn btn-danger">Delete All</button>
+<button disabled id="completedAll"  class="btn btn-success ">Completed All</button>
+</div>
+
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> <!-- to use sweet Alert -->
+<script src="js/jquery-3.4.1.slim.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/ToDo List.js"></script>
+</body>
+</html>
+
+
+
+
+

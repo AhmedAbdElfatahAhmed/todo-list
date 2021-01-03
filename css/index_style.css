@@ -1,0 +1,112 @@
+
+.toDo-container
+{
+    width: 90%;
+    background-color: #f6f6f6;
+    margin: 100px auto  ;
+}
+.toDo-container .add-task
+{
+    background-color: teal;
+    padding: 15px;
+    position: relative;
+}
+.toDo-container .add-task input
+{
+  background-color:turquoise;
+  padding: 20px;
+  border: none;
+  outline: none;
+  width: calc(100% - 20px);
+  color: #fff;
+  font-size: 20px;
+}
+
+
+.toDo-container .add-task .plus
+{
+  font-size: 35px;
+  font-weight: bold;
+  color: teal;
+  position:absolute;
+  top:25px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  background-color:#fff;
+  border-radius:50% ;
+  -webkit-border-radius:50% ;
+  -moz-border-radius:50% ;
+  -ms-border-radius:50% ;
+  -o-border-radius:50% ;
+  cursor: pointer;
+}
+
+.toDo-container .tasks-content
+{
+  padding: 15px;
+}
+
+.toDo-container .tasks-content .no-tasks-message
+{
+  color: #777;
+}
+
+
+.toDo-container .tasks-content > span
+{
+  
+  display: block;
+  background-color: #fff;
+  padding: 25px;
+  margin-bottom: 10px;
+}
+
+.toDo-container .task-box .delete
+{
+  float: right;
+  background-color: #DC3545;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius:4px ;
+  -webkit-border-radius:4px ;
+  -moz-border-radius:4px ;
+  -ms-border-radius:4px ;
+  -o-border-radius:4px ;
+  cursor: pointer;
+  user-select: none;
+  
+}
+.toDo-container .task-box.finished
+{
+ text-decoration: line-through;
+}
+
+.toDo-container .tasks-status
+{
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 22px;
+}
+
+.toDo-container .tasks-status .task-count span , .toDo-container .tasks-status .task-completed span 
+{
+ background-color: #28A745;
+ font-size: 18px;
+ padding: 0px 5px;
+ color: #fff;
+ border-radius: 5px;
+ -webkit-border-radius: 5px;
+ -moz-border-radius: 5px;
+ -ms-border-radius: 5px;
+ -o-border-radius: 5px;
+}
+
+.toDo-container .tasks-status .task-completed span
+{
+  background-color: #007BFF;
+
+}
