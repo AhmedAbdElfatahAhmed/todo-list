@@ -63,6 +63,7 @@ const handleNewTask = () => {
       return false;
     }
 
+   
 
     // function to add task (not in locallStorage)
     bindTask(theInput.value);
@@ -81,6 +82,9 @@ const handleNewTask = () => {
       timer: 2000,
       buttons: false,
     });
+
+// calculate Tasks
+calculateTasks();
 
     // focus on filed
     theInput.focus();
@@ -121,17 +125,22 @@ document.addEventListener("click", function (e) {
     if (tasksContainer.childElementCount == 0) {
       createNoTasks();
       deActivateDeleteButton()
+
     }
+      // calculate Tasks
+    calculateTasks();
   }
 
   // e.target.className == 'task-box' ====> access task-box class
   if (e.target.classList.contains("task-box")) {
     // toggle  finished class
     e.target.classList.toggle("finished");
+    
+    // calculate Tasks
+  calculateTasks();
   }
 
-  // calculate Tasks
-  calculateTasks();
+  
 });
 
 // function to create no tasks message
@@ -280,8 +289,10 @@ bindTask(task);
 
 
 const tasksFromLocalStorage=JSON.parse(localStorage.getItem("myTasks"));
+
 if(tasksFromLocalStorage)
 {
+
   tasks=tasksFromLocalStorage;
   for(task of tasksFromLocalStorage)
   {
@@ -289,7 +300,7 @@ if(tasksFromLocalStorage)
     handleNewTaskFromLocalStorage(task);
     
   }
-  
+  calculateTasks();
 }
 
 
