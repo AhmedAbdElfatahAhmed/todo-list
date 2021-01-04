@@ -13,8 +13,6 @@ excercies from Ahmed Helal
 
 */
 
-
-
 // Setting up variables
 let theInput = document.querySelector(".add-task input");
 let addButton = document.querySelector(".add-task .plus");
@@ -63,15 +61,11 @@ const handleNewTask = () => {
       return false;
     }
 
-   
-
     // function to add task (not in locallStorage)
-    bindTask(theInput.value);
-    tasks.push(theInput.value); ///////////////////////////////////////////////////////////best solution
-    localStorage.setItem("myTasks" ,JSON.stringify (tasks ) )
-
-
-
+    const myTask = { content: theInput.value, isCompleted: false };
+    bindTask(myTask);
+    tasks.push(myTask); ///////////////////////////////////////////////////////////best solution
+    updateTasksInLocalStorage();
 
     // Empty the input function
     resetInput();
@@ -83,16 +77,15 @@ const handleNewTask = () => {
       buttons: false,
     });
 
-// calculate Tasks
-calculateTasks();
+    // calculate Tasks
+    calculateTasks();
 
     // focus on filed
     theInput.focus();
   }
 
   activateDeleteButton();
-  activateCompletedButton()
-
+  activateCompletedButton();
 };
 
 // Adding the task
@@ -102,7 +95,6 @@ addButton.onclick = handleNewTask;
 theInput.onkeypress = function (e) {
   if (e.code == "Enter") {
     handleNewTask();
-    
   }
 };
 
@@ -118,16 +110,21 @@ document.addEventListener("click", function (e) {
   if (e.target.className == "delete") {
     // Remove current Task
     e.target.parentNode.remove();
+    const targetTask = tasks.filter((task) => {
+      return task.content == e.target.parentNode.firstChild.nodeValue;
+    })[0];
+    const targetIndex = tasks.indexOf(targetTask);
+    tasks.splice(targetIndex, 1); //////////////best solution
+    
 
-    tasks.splice(tasks.indexOf(e.target.parentNode.firstChild.nodeValue), 1); //////////////best solution
-    localStorage.setItem("myTasks" ,JSON.stringify (tasks ) )
+    updateTasksInLocalStorage();
+
     // check number of tasks inside the container
     if (tasksContainer.childElementCount == 0) {
       createNoTasks();
-      deActivateDeleteButton()
-
+      deActivateDeleteButton();
     }
-      // calculate Tasks
+    // calculate Tasks
     calculateTasks();
   }
 
@@ -135,14 +132,25 @@ document.addEventListener("click", function (e) {
   if (e.target.classList.contains("task-box")) {
     // toggle  finished class
     e.target.classList.toggle("finished");
-    
+    const targetContent = e.target.firstChild.nodeValue;
+    const targetTaskObject = tasks.filter((task) => {
+      return task.content == targetContent;
+    })[0];
+    const targetIndex = tasks.indexOf(targetTaskObject);
+    if (e.target.classList.contains("finished")) {
+      tasks[targetIndex].isCompleted = true;
+    } else {
+      tasks[targetIndex].isCompleted = false;
+    }
+    updateTasksInLocalStorage();
     // calculate Tasks
-  calculateTasks();
+    calculateTasks();
   }
-
-  
 });
 
+const updateTasksInLocalStorage = () => {
+  localStorage.setItem("myTasks", JSON.stringify(tasks));
+};
 // function to create no tasks message
 
 function createNoTasks() {
@@ -178,35 +186,36 @@ function calculateTasks() {
   ).length;
 }
 
+function bindTask(task) {
+  // create span element
+  let mainSpan = document.createElement("span");
 
-function bindTask(task)
-{
-// create span element
-let mainSpan = document.createElement("span");
+  // create Text Node inside mainSpan
+  mainSpan.appendChild(document.createTextNode(task.content));
 
-// create Text Node inside mainSpan
-mainSpan.appendChild(document.createTextNode(task));
+  // create delete span Button
+  let deleteButton = document.createElement("span");
 
-// create delete span Button
-let deleteButton = document.createElement("span");
+  // create Text Node (Delete) inside deleteButton
+  deleteButton.appendChild(document.createTextNode("Delete"));
 
-// create Text Node (Delete) inside deleteButton
-deleteButton.appendChild(document.createTextNode("Delete"));
+  // Append deleteButton to mainSpan
+  mainSpan.appendChild(deleteButton);
 
-// Append deleteButton to mainSpan
-mainSpan.appendChild(deleteButton);
+  // Append mainSpan to tasksContainer
+  tasksContainer.appendChild(mainSpan);
 
-// Append mainSpan to tasksContainer
-tasksContainer.appendChild(mainSpan);
+  // Add task-box class to mainSpan
+  mainSpan.classList.add("task-box");
 
-// Add task-box class to mainSpan
-mainSpan.classList.add("task-box");
+  if (task.isCompleted) {
+    mainSpan.classList.add("finished");
+  }
 
-// Add delete class to deleteButton (another method)
-deleteButton.className = "delete";
-
+  // Add delete class to deleteButton (another method)
+  deleteButton.className = "delete";
 }
-    
+
 function isTaskExist() {
   let tasksArray = [];
   let allTasks = Array.from(
@@ -240,73 +249,47 @@ deleteAll.onclick = function () {
   deActivateDeleteButton();
 };
 
-
-
 completedAll.onclick = function () {
   document
     .querySelectorAll(".task-box")
     .forEach((el) => el.classList.add("finished"));
 
-    deActivateCompletedButton()
-
+  deActivateCompletedButton();
 };
 
-
-
-function deActivateDeleteButton()
-{
-  deleteAll.disabled=true;
-  
-  
+function deActivateDeleteButton() {
+  deleteAll.disabled = true;
 }
 
-function activateDeleteButton()
-{
-  deleteAll.disabled=false;
+function activateDeleteButton() {
+  deleteAll.disabled = false;
 }
 
-function deActivateCompletedButton()
-{
-  completedAll.disabled=true;
-  
+function deActivateCompletedButton() {
+  completedAll.disabled = true;
 }
 
-function activateCompletedButton()
-{
-  completedAll.disabled=false;
+function activateCompletedButton() {
+  completedAll.disabled = false;
 }
-
 
 const handleNewTaskFromLocalStorage = (task) => {
-if( document.querySelector("#no_task"))
-{
-  document.querySelector("#no_task").remove();
-}
-   
-bindTask(task);
+  if (document.querySelector("#no_task")) {
+    document.querySelector("#no_task").remove();
   }
 
+  bindTask(task);
+};
 
+const tasksFromLocalStorage = JSON.parse(localStorage.getItem("myTasks"));
 
-const tasksFromLocalStorage=JSON.parse(localStorage.getItem("myTasks"));
-
-if(tasksFromLocalStorage)
-{
-
-  tasks=tasksFromLocalStorage;
-  for(task of tasksFromLocalStorage)
-  {
-    
+if (tasksFromLocalStorage) {
+  tasks = tasksFromLocalStorage;
+  for (task of tasksFromLocalStorage) {
     handleNewTaskFromLocalStorage(task);
-    
   }
   calculateTasks();
 }
-
-
-
-
-
 
 //using map
 
@@ -336,3 +319,63 @@ if(tasksFromLocalStorage)
 // }
 
 
+
+
+
+/*
+
+clear it
+
+
+x=[{"content":"y","isCompleted":true},{"content":"x","isCompleted":true}]
+(2) [{…}, {…}]
+x.indexOf({"content":"y","isCompleted":true})
+-1
+x.indexOf({"content":"x","isCompleted":true})
+-1
+targetLement=x.filter(task=>{retunr task.content="y"});
+VM3053:1 Uncaught SyntaxError: Unexpected identifier
+targetLement=x.filter(task=>{return task.content="y";});
+(2) [{…}, {…}]
+targetLement=x.filter(task=>{return task.content=="y";});
+(2) [{…}, {…}]0: {content: "y", isCompleted: true}1: {content: "y", isCompleted: true}length: 2__proto__: Array(0)
+x.indexOf({"content":"x","isCompleted":true})
+-1
+x=[{"content":"y","isCompleted":true},{"content":"x","isCompleted":true}]
+
+(2) [{…}, {…}]0: {content: "y", isCompleted: true}1: {content: "x", isCompleted: true}length: 2__proto__: Array(0)
+x
+(2) [{…}, {…}]0: {content: "y", isCompleted: true}1: {content: "x", isCompleted: true}length: 2__proto__: Array(0)
+targetLement=x.filter(task=>{return task.content=="y";});
+[{…}]0: {content: "y", isCompleted: true}content: "y"isCompleted: true__proto__: Objectlength: 1__proto__: Array(0)
+targetLement=x.filter(task=>{return task.content=="y";})[0];
+{content: "y", isCompleted: true}content: "y"isCompleted: true__proto__: Object
+x.indexOf({"content":"x","isCompleted":true})
+-1
+x.indexOf({content: "y", isCompleted: true})
+-1
+x.indexOf(targetLement})
+VM3196:1 Uncaught SyntaxError: missing ) after argument list
+x.indexOf(targetLement)
+0
+{content: "y", isCompleted: true}==targetLement
+VM3240:1 Uncaught SyntaxError: Unexpected token ':'
+y={content: "y", isCompleted: true}
+{content: "y", isCompleted: true}
+y==targetLement
+false
+targetLement
+{content: "y", isCompleted: true}
+tasks[0]==targetLement
+false
+x[0]==targetLement
+true
+
+
+
+
+
+
+
+
+*/
