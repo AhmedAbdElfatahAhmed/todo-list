@@ -13,8 +13,6 @@ excercies from Ahmed Helal
 
 */
 
-
-
 // Setting up variables
 let theInput = document.querySelector(".add-task input");
 let addButton = document.querySelector(".add-task .plus");
@@ -48,14 +46,11 @@ const handleNewTask = () => {
     let noTasksMsg = document.querySelector(".tasks-content .no-tasks-message"); // it is (No tasks to show) dynamic
 
     // check if span with no tasks message is exist
-    if (
-      document.body.contains(
-        document.querySelector(".tasks-content .no-tasks-message")
-      )
-    ) {
+    if (document.body.contains(noTasksMsg)) {
       //Remove no tasks message
       noTasksMsg.remove();
     }
+
     // check task is exist
     if (isTaskExist()) {
       // Empty the input function
@@ -63,15 +58,10 @@ const handleNewTask = () => {
       return false;
     }
 
-   
-
     // function to add task (not in locallStorage)
     bindTask(theInput.value);
-    tasks.push(theInput.value); ///////////////////////////////////////////////////////////best solution
-    localStorage.setItem("myTasks" ,JSON.stringify (tasks ) )
-
-
-
+    tasks.push(theInput.value); /////////////////////////////////////best solution
+    localStorage.setItem("myTasks", JSON.stringify(tasks));
 
     // Empty the input function
     resetInput();
@@ -83,16 +73,15 @@ const handleNewTask = () => {
       buttons: false,
     });
 
-// calculate Tasks
-calculateTasks();
+    // calculate Tasks
+    calculateTasks();
 
     // focus on filed
     theInput.focus();
+
+    activateDeleteButton();
+    activateCompletedButton();
   }
-
-  activateDeleteButton();
-  activateCompletedButton()
-
 };
 
 // Adding the task
@@ -102,7 +91,6 @@ addButton.onclick = handleNewTask;
 theInput.onkeypress = function (e) {
   if (e.code == "Enter") {
     handleNewTask();
-    
   }
 };
 
@@ -111,36 +99,69 @@ function resetInput() {
   // Empty the input
   theInput.value = "";
 }
-// deleteButton.onclick()
 
+// deleteButton.onclick()
 document.addEventListener("click", function (e) {
   // e.target.className == 'delete' ====> access delete span button
   if (e.target.className == "delete") {
     // Remove current Task
     e.target.parentNode.remove();
 
+    console.log(e.path[2].children);
+    console.log(e.path[2].children.length);
+    console.log(e.path[2].querySelectorAll(".finished"));
+    console.log(e.path[2].querySelectorAll(".finished").length);
+
     tasks.splice(tasks.indexOf(e.target.parentNode.firstChild.nodeValue), 1); //////////////best solution
-    localStorage.setItem("myTasks" ,JSON.stringify (tasks ) )
+    localStorage.setItem("myTasks", JSON.stringify(tasks));
     // check number of tasks inside the container
     if (tasksContainer.childElementCount == 0) {
       createNoTasks();
-      deActivateDeleteButton()
-
+      deActivateDeleteButton();
+      deActivateCompletedButton();
     }
-      // calculate Tasks
+    // calculate Tasks
     calculateTasks();
+    // if (e.path[2].children.length== e.path[2].querySelectorAll(".finished").length)
+    //     {
+    //        deActivateCompletedButton();
+    //     }
+    //     else
+    //     {
+    //       activateCompletedButton();
+    //     }
+
+    if (tasks.length == document.querySelectorAll(".finished").length) {
+      deActivateCompletedButton();
+    } else {
+      activateCompletedButton();
+    }
   }
 
   // e.target.className == 'task-box' ====> access task-box class
   if (e.target.classList.contains("task-box")) {
     // toggle  finished class
     e.target.classList.toggle("finished");
-    
-    // calculate Tasks
-  calculateTasks();
-  }
+    console.log(e.target.parentNode.children);
+    console.log(e.target.parentNode.children.length);
+    console.log(e.target.parentNode.querySelectorAll(".finished"));
+    console.log(e.target.parentNode.querySelectorAll(".finished").length);
+    console.log(e.target.parentNode);
+    if (
+      e.target.parentNode.children.length ==
+      e.target.parentNode.querySelectorAll(".finished").length
+    ) {
+      deActivateCompletedButton();
+    } else {
+      activateCompletedButton();
+    }
 
-  
+    // calculate Tasks
+
+    calculateTasks();
+
+    // console.log(e.target.parentNode)
+  }
 });
 
 // function to create no tasks message
@@ -178,35 +199,135 @@ function calculateTasks() {
   ).length;
 }
 
+function bindTask(task) {
+  // create span element
+  let mainSpan = document.createElement("span");
 
-function bindTask(task)
-{
-// create span element
-let mainSpan = document.createElement("span");
+  // create Text Node inside mainSpan
+  mainSpan.appendChild(document.createTextNode(task));
 
-// create Text Node inside mainSpan
-mainSpan.appendChild(document.createTextNode(task));
+  // create delete span Button
+  let deleteButton = document.createElement("span");
 
-// create delete span Button
-let deleteButton = document.createElement("span");
+  // create Text Node (Delete) inside deleteButton
+  deleteButton.appendChild(document.createTextNode("Delete"));
 
-// create Text Node (Delete) inside deleteButton
-deleteButton.appendChild(document.createTextNode("Delete"));
+  // Append deleteButton to mainSpan
+  mainSpan.appendChild(deleteButton);
 
-// Append deleteButton to mainSpan
-mainSpan.appendChild(deleteButton);
+  // Append mainSpan to tasksContainer
+  tasksContainer.appendChild(mainSpan);
 
-// Append mainSpan to tasksContainer
-tasksContainer.appendChild(mainSpan);
+  // Add task-box class to mainSpan
+  mainSpan.classList.add("task-box");
 
-// Add task-box class to mainSpan
-mainSpan.classList.add("task-box");
-
-// Add delete class to deleteButton (another method)
-deleteButton.className = "delete";
-
+  // Add delete class to deleteButton (another method)
+  deleteButton.className = "delete";
 }
-    
+
+// best solution
+
+function isTaskExist() {
+  if (tasks.includes(theInput.value)) {
+    // swal("warning!", "You task is already Exist!", "warning"); // do not have time , and have button
+    swal("warning", {
+      title: "You task is already Exist!",
+      icon: "warning",
+      timer: 2000,
+      buttons: false,
+    });
+    return true;
+  }
+  return false;
+}
+
+deleteAll.onclick = function () {
+  document.querySelectorAll(".task-box").forEach((el) => {
+    el.parentNode.removeChild(el);
+    tasks.splice(0, tasks.length);
+    localStorage.setItem("myTasks", JSON.stringify(tasks));
+  });
+
+  if (!document.querySelector("#no_task")) {
+    createNoTasks();
+  }
+  calculateTasks();
+  deActivateDeleteButton();
+  deActivateCompletedButton();
+};
+
+completedAll.onclick = function () {
+  document.querySelectorAll(".task-box").forEach((el) => {
+    el.classList.add("finished");
+  });
+
+  deActivateCompletedButton();
+};
+
+// console.log(document.querySelectorAll(".task-box"))
+
+function deActivateDeleteButton() {
+  deleteAll.disabled = true;
+}
+
+function activateDeleteButton() {
+  deleteAll.disabled = false;
+}
+
+function deActivateCompletedButton() {
+  completedAll.disabled = true;
+}
+
+function activateCompletedButton() {
+  completedAll.disabled = false;
+}
+
+const handleNewTaskFromLocalStorage = (task) => {
+  if (document.querySelector("#no_task")) {
+    document.querySelector("#no_task").remove();
+  }
+
+  bindTask(task);
+};
+
+const tasksFromLocalStorage = JSON.parse(localStorage.getItem("myTasks"));
+
+if (tasksFromLocalStorage) {
+  tasks = tasksFromLocalStorage;
+  for (task of tasksFromLocalStorage) {
+    handleNewTaskFromLocalStorage(task);
+  }
+  calculateTasks();
+
+  if (tasksContainer.firstElementChild.className == "no-tasks-message") {
+    deActivateDeleteButton();
+    deActivateCompletedButton();
+  } else {
+    activateDeleteButton();
+    activateCompletedButton();
+  }
+}
+
+//using map
+
+// function isTaskExist() {
+//   let allTasks = Array.from(
+//     document.querySelectorAll(".tasks-content .task-box")
+//   ).map((taskElement) => {
+//     console.log(taskElement);
+//     return taskElement.firstChild.nodeValue;
+//   });
+
+//   if (allTasks.includes(theInput.value)) {
+//     swal("warning!", "You task is already Exist!", "warning");
+//     return true;
+//   }
+//   return false;
+// }
+
+/*
+// another solution for tasks is repeated
+
 function isTaskExist() {
   let tasksArray = [];
   let allTasks = Array.from(
@@ -229,110 +350,4 @@ function isTaskExist() {
   return false;
 }
 
-deleteAll.onclick = function () {
-  document
-    .querySelectorAll(".task-box")
-    .forEach((el) => el.parentNode.removeChild(el));
-  if (!document.querySelector("#no_task")) {
-    createNoTasks();
-  }
-
-  deActivateDeleteButton();
-};
-
-
-
-completedAll.onclick = function () {
-  document
-    .querySelectorAll(".task-box")
-    .forEach((el) => el.classList.add("finished"));
-
-    deActivateCompletedButton()
-
-};
-
-
-
-function deActivateDeleteButton()
-{
-  deleteAll.disabled=true;
-  
-  
-}
-
-function activateDeleteButton()
-{
-  deleteAll.disabled=false;
-}
-
-function deActivateCompletedButton()
-{
-  completedAll.disabled=true;
-  
-}
-
-function activateCompletedButton()
-{
-  completedAll.disabled=false;
-}
-
-
-const handleNewTaskFromLocalStorage = (task) => {
-if( document.querySelector("#no_task"))
-{
-  document.querySelector("#no_task").remove();
-}
-   
-bindTask(task);
-  }
-
-
-
-const tasksFromLocalStorage=JSON.parse(localStorage.getItem("myTasks"));
-
-if(tasksFromLocalStorage)
-{
-
-  tasks=tasksFromLocalStorage;
-  for(task of tasksFromLocalStorage)
-  {
-    
-    handleNewTaskFromLocalStorage(task);
-    
-  }
-  calculateTasks();
-}
-
-
-
-
-
-
-//using map
-
-// function isTaskExist() {
-//   let allTasks = Array.from(
-//     document.querySelectorAll(".tasks-content .task-box")
-//   ).map((taskElement) => {
-//     console.log(taskElement);
-//     return taskElement.firstChild.nodeValue;
-//   });
-
-//   if (allTasks.includes(theInput.value)) {
-//     swal("warning!", "You task is already Exist!", "warning");
-//     return true;
-//   }
-//   return false;
-// }
-
-///////////////////////////// best solution
-
-// function isTaskExist() {
-//   if (tasks.includes(theInput.value)) {
-//     swal("warning!", "You task is already Exist!", "warning");
-//     return true;
-//   }
-//   return false;
-// }
-
-
+*/
