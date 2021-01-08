@@ -107,12 +107,7 @@ document.addEventListener("click", function (e) {
     // Remove current Task
     e.target.parentNode.remove();
 
-    console.log(e.path[2].children);
-    console.log(e.path[2].children.length);
-    console.log(e.path[2].querySelectorAll(".finished"));
-    console.log(e.path[2].querySelectorAll(".finished").length);
-
-    tasks.splice(tasks.indexOf(e.target.parentNode.firstChild.nodeValue), 1); //////////////best solution
+    tasks.splice(tasks.indexOf(e.target.parentNode.firstChild.nodeValue), 1); ///////////best solution
     localStorage.setItem("myTasks", JSON.stringify(tasks));
     // check number of tasks inside the container
     if (tasksContainer.childElementCount == 0) {
@@ -122,15 +117,8 @@ document.addEventListener("click", function (e) {
     }
     // calculate Tasks
     calculateTasks();
-    // if (e.path[2].children.length== e.path[2].querySelectorAll(".finished").length)
-    //     {
-    //        deActivateCompletedButton();
-    //     }
-    //     else
-    //     {
-    //       activateCompletedButton();
-    //     }
 
+    //  to fix bug of completed deactive after click in delete button
     if (tasks.length == document.querySelectorAll(".finished").length) {
       deActivateCompletedButton();
     } else {
@@ -142,11 +130,8 @@ document.addEventListener("click", function (e) {
   if (e.target.classList.contains("task-box")) {
     // toggle  finished class
     e.target.classList.toggle("finished");
-    console.log(e.target.parentNode.children);
-    console.log(e.target.parentNode.children.length);
-    console.log(e.target.parentNode.querySelectorAll(".finished"));
-    console.log(e.target.parentNode.querySelectorAll(".finished").length);
-    console.log(e.target.parentNode);
+
+    // to fix bug of completed deactive
     if (
       e.target.parentNode.children.length ==
       e.target.parentNode.querySelectorAll(".finished").length
