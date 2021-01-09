@@ -5,11 +5,7 @@ excercies
 3- create delete all tasks button (new button)
 4- create finish all tasks button (new button)
 5- Add task to localstorage
-*/
-
-/*
-excercies from Ahmed Helal 
-1-
+6- activate and deactivate DeletedAll and CompletedAll Button
 
 */
 
@@ -59,10 +55,13 @@ const handleNewTask = () => {
     }
 
     // function to add task (not in locallStorage)
-    bindTask(theInput.value);
-    tasks.push(theInput.value); /////////////////////////////////////best solution
+    const myTask = {
+      content: theInput.value,
+      isCompleted: false,
+    };
+    bindTask(myTask);
+    tasks.push(myTask); /////////////////////////////////////best solution
     localStorage.setItem("myTasks", JSON.stringify(tasks));
-
     // Empty the input function
     resetInput();
     // show feedback
@@ -106,8 +105,13 @@ document.addEventListener("click", function (e) {
   if (e.target.className == "delete") {
     // Remove current Task
     e.target.parentNode.remove();
-
-    tasks.splice(tasks.indexOf(e.target.parentNode.firstChild.nodeValue), 1); ///////////best solution
+    let targetTask = tasks.filter(
+      (task) => task.content == e.target.parentNode.firstChild.nodeValue
+    )[0];
+    // tasks.splice(tasks.indexOf(e.target.parentNode.firstChild.nodeValue), 1);// do not work
+    // console.log(tasks.indexOf(e.target.parentNode.firstChild.nodeValue));  // print -1
+    targetIndex = tasks.indexOf(targetTask);
+    tasks.splice(targetIndex, 1);
     localStorage.setItem("myTasks", JSON.stringify(tasks));
     // check number of tasks inside the container
     if (tasksContainer.childElementCount == 0) {
@@ -130,6 +134,17 @@ document.addEventListener("click", function (e) {
   if (e.target.classList.contains("task-box")) {
     // toggle  finished class
     e.target.classList.toggle("finished");
+
+    let targetobject = tasks.filter(
+      (task) => task.content == e.target.firstChild.nodeValue
+    )[0];
+
+    if (e.target.classList.contains("finished")) {
+      targetobject.isCompleted = true;
+    } else {
+      targetobject.isCompleted = false;
+    }
+    localStorage.setItem("myTasks", JSON.stringify(tasks));
 
     // to fix bug of completed deactive
     if (
@@ -189,7 +204,7 @@ function bindTask(task) {
   let mainSpan = document.createElement("span");
 
   // create Text Node inside mainSpan
-  mainSpan.appendChild(document.createTextNode(task));
+  mainSpan.appendChild(document.createTextNode(task.content));
 
   // create delete span Button
   let deleteButton = document.createElement("span");
@@ -208,12 +223,17 @@ function bindTask(task) {
 
   // Add delete class to deleteButton (another method)
   deleteButton.className = "delete";
+
+  if (task.isCompleted) {
+    mainSpan.classList.add("finished");
+  }
 }
 
 // best solution
 
 function isTaskExist() {
-  if (tasks.includes(theInput.value)) {
+  let theInputTask = tasks.map((task) => task.content); //return array of task.content
+  if (theInputTask.includes(theInput.value)) {
     // swal("warning!", "You task is already Exist!", "warning"); // do not have time , and have button
     swal("warning", {
       title: "You task is already Exist!",
@@ -229,6 +249,7 @@ function isTaskExist() {
 deleteAll.onclick = function () {
   document.querySelectorAll(".task-box").forEach((el) => {
     el.parentNode.removeChild(el);
+    // to make this button access all task
     tasks.splice(0, tasks.length);
     localStorage.setItem("myTasks", JSON.stringify(tasks));
   });
@@ -245,8 +266,13 @@ completedAll.onclick = function () {
   document.querySelectorAll(".task-box").forEach((el) => {
     el.classList.add("finished");
   });
-
+  // to make this button access all task
+  for (let i = 0; i < tasks.length; i++) {
+    tasks[i].isCompleted = true;
+  }
+  localStorage.setItem("myTasks", JSON.stringify(tasks));
   deActivateCompletedButton();
+  calculateTasks();
 };
 
 // console.log(document.querySelectorAll(".task-box"))
@@ -289,6 +315,18 @@ if (tasksFromLocalStorage) {
     deActivateCompletedButton();
   } else {
     activateDeleteButton();
+    activateCompletedButton();
+  }
+
+  //  console.log(tasks.isCompleted)
+
+  let checkIsCompleted = tasks.every(
+    (everyTask) => everyTask.isCompleted == true
+  );
+
+  if (checkIsCompleted == true) {
+    deActivateCompletedButton();
+  } else {
     activateCompletedButton();
   }
 }
